@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 export default function Navegacion() {
   return (
-    <nav className="navbar navbar-expand-lg mb-4">
+    <nav className="navbar navbar-expand-lg mb-4 bg-primary">
       <div className="container">
         <Link className="navbar-brand" to="/">RH React</Link>
 

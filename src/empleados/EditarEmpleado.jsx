@@ -1,16 +1,36 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { NumericFormat } from 'react-number-format'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { urlBase } from '../config'
 
-export default function AgregarEmpleado() {
+export default function EditarEmpleado() {
+  const { idEmpleado } = useParams()
+  const navigate = useNavigate()
+
   const [nombre, setNombre] = useState('')
   const [departamento, setDepartamento] = useState('')
   const [sueldo, setSueldo] = useState(0)
+  const [cargando, setCargando] = useState(true)
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState('')
-  const navigate = useNavigate()
+
+  useEffect(() => {
+    const cargar = async () => {
+      try {
+        const { data } = await axios.get(`${urlBase}/${idEmpleado}`)
+        setNombre(data?.nombre ?? '')
+        setDepartamento(data?.departamento ?? '')
+        setSueldo(Number(data?.sueldo) || 0)
+      // eslint-disable-next-line no-unused-vars
+      } catch (e) {
+        setError('No se pudo cargar el empleado.')
+      } finally {
+        setCargando(false)
+      }
+    }
+    cargar()
+  }, [idEmpleado])
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -27,25 +47,27 @@ export default function AgregarEmpleado() {
 
     try {
       setEnviando(true)
-      // El backend genera idEmpleado; enviamos solo los campos del alta:
-      await axios.post(urlBase, {
+      await axios.put(`${urlBase}/${idEmpleado}`, {
+        //idEmpleado: Number(idEmpleado), // este valor se debe enviar o no dependiendo de las reglas del backend
         nombre: nombreOk,
         departamento: deptoOk,
         sueldo: sueldoOk
       })
-      navigate('/') // volver al listado
+      navigate('/')
     // eslint-disable-next-line no-unused-vars
     } catch (e) {
-      setError('No se pudo guardar el empleado.')
+      setError('No se pudo actualizar el empleado.')
     } finally {
       setEnviando(false)
     }
   }
 
+  if (cargando) return <p className="text-secondary">Cargando...</p>
+
   return (
     <div className="card">
       <div className="card-header">
-        <strong>Agregar empleado</strong>
+        <strong>Editar empleado #{idEmpleado}</strong>
       </div>
       <div className="card-body">
         {error && <div className="alert alert-danger mb-3">{error}</div>}
@@ -86,9 +108,12 @@ export default function AgregarEmpleado() {
             />
           </div>
 
-          <div className="col-12">
-            <button type="submit" className="btn btn-success" disabled={enviando}>
+          <div className="col-12 d-flex gap-2">
+            <button type="submit" className="btn btn-primary" disabled={enviando}>
               {enviando ? 'Guardando…' : 'Guardar'}
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={() => navigate(-1)}>
+              Regresar
             </button>
           </div>
         </form>

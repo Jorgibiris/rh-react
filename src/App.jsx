@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navegacion from './Navegacion.jsx'
 import ListadoEmpleados from './empleados/ListadoEmpleados.jsx'
 import AgregarEmpleado from './empleados/AgregarEmpleado.jsx'
-//import EditarEmpleado from './empleados/EditarEmpleado.jsx'
+import EditarEmpleado from './empleados/EditarEmpleado.jsx'
 
 export default function App() {
   return (
@@ -12,7 +12,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<ListadoEmpleados />} />
           <Route path="/agregar" element={<AgregarEmpleado />} />
-          {/*<Route path="/editar/:idEmpleado" element={<EditarEmpleado />} />*/}
+          <Route path="/editar/:idEmpleado" element={<EditarEmpleado />} />
         </Routes>
       </div>
     </BrowserRouter>
